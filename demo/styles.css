@@ -1,0 +1,53 @@
+:root {
+  --bg: #f5f7f9;       /* cool off-white -- not white, not dark */
+  --fg: #22242b;       /* near-black, neutral */
+  --dim: #888e98;      /* cool muted label grey */
+  --accent: #c0392f;   /* the apple red */
+  --line: #e3e6eb;     /* cool hairline / soft border */
+  /* overlay sits over the dark game canvas, so its text stays light regardless of the page theme */
+  --over-fg: #efece4;
+  --over-dim: rgba(239, 236, 228, 0.55);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: grid; place-items: center;
+  background: var(--bg); color: var(--fg);
+  font: 15px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+}
+main { text-align: center; padding: 24px; }
+h1 { font-size: 34px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.5px; }
+h1 span { color: var(--dim); }
+.tag { color: var(--dim); max-width: 600px; margin: 0 auto 20px; }
+
+.stage { position: relative; display: inline-block; }
+#view {
+  display: block; border-radius: 6px; background: #000;
+  image-rendering: pixelated;
+  box-shadow: 0 0 0 1px var(--line), 0 14px 36px rgba(30, 35, 45, 0.16);
+}
+.screen {
+  position: absolute; inset: 0; display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  background: rgba(10, 8, 12, 0.72); border-radius: 6px; cursor: pointer;
+  backdrop-filter: blur(2px); color: var(--over-fg);
+}
+.screen.show { display: flex; }
+.go-title { font-size: 30px; font-weight: 700; color: var(--accent); }
+.go-sub, #loading { color: var(--over-fg); }
+.go-reason { color: var(--over-dim); font-size: 12px; }
+#loading { font-size: 16px; }
+
+.hud {
+  display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
+  margin: 18px auto 0; color: var(--dim);
+}
+.hud b { color: var(--fg); font-weight: 600; }
+.note { color: var(--dim); font-size: 12px; margin-top: 10px; }
+
+/* placeholder link to the project repo -- swap the href when the repo is public */
+.repo {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px;
+  color: var(--dim); text-decoration: none; font-size: 13px;
+  border-bottom: 1px solid transparent; transition: color .15s, border-color .15s;
+}
+.repo:hover { color: var(--accent); border-color: var(--accent); }

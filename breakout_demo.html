@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Breakout 演示</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,sans-serif} body{margin:0;min-height:100vh;display:grid;place-items:center;background:#101522}main{text-align:center}h1{margin:0 0 8px;font-size:24px}p{margin:0 0 14px;color:#aeb9d0}canvas{display:block;width:min(92vw,800px);height:auto;border:2px solid #56627b;background:#080d18;image-rendering:pixelated}.help{margin-top:12px;font-size:14px}kbd{padding:2px 6px;border:1px solid #65728d;border-radius:4px;background:#202a40}
+  </style>
+</head>
+<body><main><h1>Breakout</h1><p>移动挡板，把砖块全部打掉</p><canvas id="game" width="800" height="500"></canvas><div class="help"><kbd>←</kbd><kbd>→</kbd> 或 <kbd>A</kbd><kbd>D</kbd> 移动　<kbd>空格</kbd> 开始/暂停　<kbd>R</kbd> 重置</div></main>
+<script>
+const c=document.querySelector('#game'),x=c.getContext('2d'),W=c.width,H=c.height,keys=new Set();let paddle,ball,bricks,score,lives,playing;
+const cols=10,rows=5,bw=66,bh=22,gap=8,left=(W-(cols*bw+(cols-1)*gap))/2;
+function reset(){paddle={x:W/2-55,y:H-38,w:110,h:13,v:0};ball={x:W/2,y:H-55,r:8,vx:4,vy:-4};bricks=[];score=0;lives=3;playing=false;for(let r=0;r<rows;r++)for(let q=0;q<cols;q++)bricks.push({x:left+q*(bw+gap),y:55+r*(bh+gap),w:bw,h:bh,on:true,color:['#fb7185','#f97316','#facc15','#4ade80','#60a5fa'][r]});}
+function serve(){ball.x=paddle.x+paddle.w/2;ball.y=paddle.y-ball.r-1;ball.vx=(Math.random()<.5?-1:1)*4;ball.vy=-4;playing=false;}
+function update(){let l=keys.has('ArrowLeft')||keys.has('a'),r=keys.has('ArrowRight')||keys.has('d');paddle.v=(r-l)*8;paddle.x=Math.max(0,Math.min(W-paddle.w,paddle.x+paddle.v));ball.x+=ball.vx;ball.y+=ball.vy;if(ball.x<ball.r||ball.x>W-ball.r){ball.vx*=-1;ball.x=Math.max(ball.r,Math.min(W-ball.r,ball.x))}if(ball.y<ball.r){ball.vy*=-1;ball.y=ball.r}if(ball.vy>0&&ball.y+ball.r>=paddle.y&&ball.y-ball.r<=paddle.y+paddle.h&&ball.x>=paddle.x&&ball.x<=paddle.x+paddle.w){let rel=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);ball.vx=rel*6;ball.vy=-Math.abs(ball.vy);ball.y=paddle.y-ball.r}for(const b of bricks)if(b.on&&ball.x+ball.r>b.x&&ball.x-ball.r<b.x+b.w&&ball.y+ball.r>b.y&&ball.y-ball.r<b.y+b.h){b.on=false;score+=10;ball.vy*=-1;break}if(bricks.every(b=>!b.on))playing=false;if(ball.y>H+20){lives--;if(lives<=0){playing=false}else serve()}}
+function draw(){x.fillStyle='#080d18';x.fillRect(0,0,W,H);for(const b of bricks)if(b.on){x.fillStyle=b.color;x.fillRect(b.x,b.y,b.w,b.h)}x.fillStyle='#e8eefc';x.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);x.beginPath();x.arc(ball.x,ball.y,ball.r,0,Math.PI*2);x.fill();x.font='bold 18px system-ui';x.textAlign='left';x.fillText('分数 '+score,18,28);x.textAlign='right';x.fillText('生命 '+lives,W-18,28);if(!playing){x.fillStyle='#aeb9d0';x.textAlign='center';x.font='20px system-ui';x.fillText(lives<=0?'游戏结束，按 R 重置':bricks.every(b=>!b.on)?'胜利！按 R 再来一局':'按空格开始',W/2,H-18)}}
+function loop(){if(playing)update();draw();requestAnimationFrame(loop)}addEventListener('keydown',e=>{keys.add(e.key);if(e.key===' '){if(lives>0&&!bricks.every(b=>!b.on))playing=!playing;e.preventDefault()}if(e.key.toLowerCase()==='r')reset()});addEventListener('keyup',e=>keys.delete(e.key));reset();loop();
+</script></body></html>
